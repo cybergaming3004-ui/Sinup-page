@@ -46,7 +46,7 @@ form.addEventListener("submit", function(e) {
     }
 
     // --- SERVER KO DATA BHEJNA ---
-    fetch('/signup', {
+    fetch('https://sinup-page.onrender.com', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
