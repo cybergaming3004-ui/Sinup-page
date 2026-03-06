@@ -8,7 +8,7 @@ const uppercaseRule = document.getElementById("uppercase");
 const numberRule = document.getElementById("number");
 const specialRule = document.getElementById("special");
 
-// 1. Password Validation Logic (Rules update karne ke liye)
+// Password Validation
 password.addEventListener("keyup", function() {
     const value = password.value;
     if (value.length >= 8) lengthRule.classList.add("valid"); else lengthRule.classList.remove("valid");
@@ -17,12 +17,12 @@ password.addEventListener("keyup", function() {
     if (/[!@#$%^&*]/.test(value)) specialRule.classList.add("valid"); else specialRule.classList.remove("valid");
 });
 
-// 2. Eye Icon Logic (Password dekhne ke liye)
+// Eye Icon
 document.getElementById("togglePassword").onclick = function() {
     password.type = (password.type === "password") ? "text" : "password";
 };
 
-// 3. Form Submission Logic (Database mein bhejne ke liye)
+// Form Submission
 form.addEventListener("submit", function(e) {
     e.preventDefault();
 
@@ -31,22 +31,19 @@ form.addEventListener("submit", function(e) {
     const passwordValue = password.value;
     const confirmPasswordValue = confirmPassword.value;
 
-    // Validation checks
-    const emailPattern = /^[^ ]+@[^ ]+\.[a-z]{2,3}$/;
-    if (!emailValue.match(emailPattern)) {
-        message.style.color = "red";
-        message.textContent = "Enter valid email";
-        return;
-    }
-
     if (passwordValue !== confirmPasswordValue) {
         message.style.color = "red";
-        message.textContent = "Passwords do not match";
+        message.textContent = "Passwords do not match!";
         return;
     }
 
-    // --- SERVER KO DATA BHEJNA ---
-    fetch('https://sinup-page.onrender.com', {
+    message.style.color = "white";
+    message.textContent = "Processing...";
+
+    // --- RENDER URL UPDATE ---
+    // Yahan apna asli Render link dalo (Jo aapko Render Dashboard par mila hai)
+    // Example: 'https://sinup-page.onrender.com/signup'
+    fetch('https://sinup-page.onrender.com/signup', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -59,9 +56,8 @@ form.addEventListener("submit", function(e) {
     .then(data => {
         if (data.success) {
             message.style.color = "lightgreen";
-            message.textContent = "🎉 Account successfully ban gaya!";
-            form.reset(); // Form khali kar dega
-            // Sabhi rules ko wapas normal kar do
+            message.textContent = "🎉 " + data.message;
+            form.reset();
             [lengthRule, uppercaseRule, numberRule, specialRule].forEach(el => el.classList.remove("valid"));
         } else {
             message.style.color = "red";
@@ -69,7 +65,7 @@ form.addEventListener("submit", function(e) {
         }
     })
     .catch(err => {
-        console.error("Lafda:", err);
+        console.error("Fetch Error:", err);
         message.style.color = "red";
         message.textContent = "Server se connect nahi ho paya!";
     });
