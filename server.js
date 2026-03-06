@@ -19,11 +19,29 @@ const db = mysql.createConnection({
 });
 
 db.connect((err) => {
-  if (err) {
-    console.log("❌ Database connect nahi hua:", err.message);
-  } else {
-    console.log("✅ MySQL Connected: yflix database ready hai!");
-  }
+    if (err) {
+        console.error('Database connection error: ', err);
+    } else {
+        console.log('Connected to Railway Database!');
+        
+        // YE CODE APNE AAP TABLE BANA DEGA
+        const createTableQuery = `
+            CREATE TABLE IF NOT EXISTS users (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                username VARCHAR(255) NOT NULL,
+                email VARCHAR(255) NOT NULL,
+                password VARCHAR(255) NOT NULL
+            );
+        `;
+
+        db.query(createTableQuery, (err, result) => {
+            if (err) {
+                console.error("Table banane mein error: ", err);
+            } else {
+                console.log("Table 'users' bilkul taiyar hai!");
+            }
+        });
+    }
 });
 
 // 2. Signup Route: Script.js se data yahan aayega
@@ -45,3 +63,7 @@ app.post("/signup", (req, res) => {
 app.listen(3000, () => {
   console.log("🚀 Server running on http://localhost:3000");
 });
+
+
+
+
