@@ -17,7 +17,7 @@ password.addEventListener("keyup", function() {
     if (/[!@#$%^&*]/.test(value)) specialRule.classList.add("valid"); else specialRule.classList.remove("valid");
 });
 
-// Eye Icon
+// Eye Icon Logic
 document.getElementById("togglePassword").onclick = function() {
     password.type = (password.type === "password") ? "text" : "password";
 };
@@ -41,8 +41,7 @@ form.addEventListener("submit", function(e) {
     message.textContent = "Processing...";
 
     // --- RENDER URL UPDATE ---
-    // Yahan apna asli Render link dalo (Jo aapko Render Dashboard par mila hai)
-    // Example: 'https://sinup-page.onrender.com/signup'
+    // Make sure 'https://sinup-page.onrender.com/signup' is your correct link
     fetch('https://sinup-page.onrender.com/signup', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -52,7 +51,10 @@ form.addEventListener("submit", function(e) {
             password: passwordValue
         })
     })
-    .then(res => res.json())
+    .then(res => {
+        if(!res.ok) throw new Error('Network response was not ok');
+        return res.json();
+    })
     .then(data => {
         if (data.success) {
             message.style.color = "lightgreen";
@@ -67,6 +69,6 @@ form.addEventListener("submit", function(e) {
     .catch(err => {
         console.error("Fetch Error:", err);
         message.style.color = "red";
-        message.textContent = "Server se connect nahi ho paya!";
+        message.textContent = "Server se connect nahi ho paya! URL ya Internet check karein.";
     });
 });

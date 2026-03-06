@@ -1,13 +1,13 @@
 const express = require("express");
 const mysql = require("mysql2");
-const cors = require("cors");
+const cors = require("cors"); // CORS error fix karne ke liye
 
 const app = express();
 
 // Middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(cors()); // Isse cross-origin errors nahi aayenge
+app.use(cors()); // Isse frontend aur backend connect ho payenge
 
 // 1. MySQL Connection (Railway Details)
 const db = mysql.createConnection({
@@ -29,14 +29,14 @@ db.connect((err) => {
             CREATE TABLE IF NOT EXISTS users (
                 id INT AUTO_INCREMENT PRIMARY KEY,
                 username VARCHAR(255) NOT NULL,
-                email VARCHAR(255) UNIQUE NOT NULL,
+                email VARCHAR(255) NOT NULL,
                 password VARCHAR(255) NOT NULL
             );
         `;
 
         db.query(createTableQuery, (err, result) => {
             if (err) console.error("❌ Table error: ", err);
-            else console.log("✅ Table 'users' ready!");
+            else console.log("✅ Table 'users' taiyar hai!");
         });
     }
 });
@@ -45,23 +45,19 @@ db.connect((err) => {
 app.post("/signup", (req, res) => {
   const { name, email, password } = req.body;
 
-  // Sahi Query: 'name' ko 'username' column mein insert kar rahe hain
+  // 'name' ko 'username' column mein daalna hai
   const sql = "INSERT INTO users (username, email, password) VALUES (?, ?, ?)";
   
   db.query(sql, [name, email, password], (err, result) => {
     if (err) {
       console.log("❌ DB Error:", err.message);
-      // Agar email pehle se hai (Duplicate entry error)
-      if (err.code === 'ER_DUP_ENTRY') {
-          return res.status(400).json({ success: false, message: "Email pehle se register hai!" });
-      }
-      return res.status(500).json({ success: false, message: "Server error! Baad mein try karein." });
+      return res.status(500).json({ success: false, message: "Database error: " + err.message });
     }
     res.json({ success: true, message: "Account successfully ban gaya!" });
   });
 });
 
-// Port setting for Render
+// Port for Render
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
     console.log(`🚀 Server running on port ${PORT}`);
