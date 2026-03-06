@@ -11,10 +11,11 @@ app.use(express.static("public"));
 
 // 1. MySQL Connection (yflix database)
 const db = mysql.createConnection({
-  host: "localhost",
-  user: "root",
-  password: "", // XAMPP default empty
-  database: "yflix"
+    host: 'mysql.railway.internal',      // Railway se copy karo
+    user: 'root',      // Railway se copy karo
+    password: 'NGyKywLsGPAfWCvJjjgxjyKOmmpyVGhc', 
+    database: 'railway', 
+    port: 3306,
 });
 
 db.connect((err) => {
@@ -43,13 +44,4 @@ app.post("/signup", (req, res) => {
 
 app.listen(3000, () => {
   console.log("🚀 Server running on http://localhost:3000");
-});
-
-// Test karne ke liye ek dummy rasta
-app.get("/test-add", (req, res) => {
-  const sql = "INSERT INTO users (name, email, password) VALUES ('Test User', 'test@gmail.com', '123456')";
-  db.query(sql, (err, result) => {
-    if (err) return res.send("Database Error: " + err.message);
-    res.send("<h1>Manual Data Save Ho Gaya! phpMyAdmin check karo.</h1>");
-  });
 });
