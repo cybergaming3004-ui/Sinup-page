@@ -1,48 +1,20 @@
-const password = document.getElementById("password");
-const confirmPassword = document.getElementById("confirmPassword");
 const form = document.getElementById("signupForm");
 const message = document.getElementById("message");
 
-const lengthRule = document.getElementById("length");
-const uppercaseRule = document.getElementById("uppercase");
-const numberRule = document.getElementById("number");
-const specialRule = document.getElementById("special");
-
-// Password Validation
-password.addEventListener("keyup", function() {
-    const value = password.value;
-    if (value.length >= 8) lengthRule.classList.add("valid"); else lengthRule.classList.remove("valid");
-    if (/[A-Z]/.test(value)) uppercaseRule.classList.add("valid"); else uppercaseRule.classList.remove("valid");
-    if (/[0-9]/.test(value)) numberRule.classList.add("valid"); else numberRule.classList.remove("valid");
-    if (/[!@#$%^&*]/.test(value)) specialRule.classList.add("valid"); else specialRule.classList.remove("valid");
-});
-
-// Eye Icon Logic
-document.getElementById("togglePassword").onclick = function() {
-    password.type = (password.type === "password") ? "text" : "password";
-};
-
-// Form Submission
 form.addEventListener("submit", function(e) {
     e.preventDefault();
 
     const nameValue = document.getElementById("name").value;
     const emailValue = document.getElementById("email").value;
-    const passwordValue = password.value;
-    const confirmPasswordValue = confirmPassword.value;
-
-    if (passwordValue !== confirmPasswordValue) {
-        message.style.color = "red";
-        message.textContent = "Passwords do not match!";
-        return;
-    }
+    const passwordValue = document.getElementById("password").value;
 
     message.style.color = "white";
     message.textContent = "Processing...";
 
-    // --- RENDER URL UPDATE ---
-    // Make sure 'https://sinup-page.onrender.com/signup' is your correct link
-    fetch('https://sinup-page.onrender.com/signup', {
+    // Yeh line apne aap aapka sahi URL pakad legi
+    const apiUrl = window.location.origin + '/signup';
+
+    fetch(apiUrl, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -51,24 +23,19 @@ form.addEventListener("submit", function(e) {
             password: passwordValue
         })
     })
-    .then(res => {
-        if(!res.ok) throw new Error('Network response was not ok');
-        return res.json();
-    })
+    .then(res => res.json())
     .then(data => {
         if (data.success) {
             message.style.color = "lightgreen";
-            message.textContent = "🎉 " + data.message;
+            message.textContent = data.message;
             form.reset();
-            [lengthRule, uppercaseRule, numberRule, specialRule].forEach(el => el.classList.remove("valid"));
         } else {
             message.style.color = "red";
             message.textContent = data.message;
         }
     })
     .catch(err => {
-        console.error("Fetch Error:", err);
         message.style.color = "red";
-        message.textContent = "Server se connect nahi ho paya! URL ya Internet check karein.";
+        message.textContent = "Server connect nahi ho raha!";
     });
 });
